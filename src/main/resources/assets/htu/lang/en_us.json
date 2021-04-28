@@ -1,0 +1,45 @@
+{
+  "itemGroup.htu.steam_creative_tab": "HTU Steam age",
+  "itemGroup.htu.primal_creative_tab": "HTU Primal age",
+
+  "item.htu.ingot_copper": "Copper Ingot",
+  "item.htu.ingot_tin": "Tin Ingot",
+  "item.htu.ingot_bronze": "Bronze Ingot",
+
+  "block.htu.block_copper": "Copper Block",
+  "block.htu.block_tin": "Tin Block",
+  "block.htu.block_bronze": "Bronze Block",
+
+  "block.htu.block_copper_ore": "Copper Ore",
+  "block.htu.block_tin_ore": "Tin Ore",
+
+  "block.htu.block_furnace": "Furnace",
+
+  "block.htu.block_smeltery": "Smeltery",
+  "container.htu.smeltery": "Smeltery",
+
+  "block.htu.block_steam_boiler": "Steam Boiler",
+  "container.htu.steam_boiler": "Steam Boiler",
+
+  "block.htu.block_fluid_tank": "Fluid tank",
+  "block.htu.block_pipe": "Fluid pipe",
+  "block.htu.block_water_pump": "Steam water pump",
+
+  "advancements.htu.steam_age.root.title":"HTU Steam age",
+  "advancements.htu.steam_age.root.desc": "Start a new age of progress",
+
+  "advancements.htu.steam_age.plumber.title":"Plumber",
+  "advancements.htu.steam_age.plumber.desc": "Get your first pipe!",
+
+  "advancements.htu.stone_age.root.title": "HTU Stone age",
+  "advancements.htu.stone_age.root.desc": "Where is my mammoth?!",
+
+  "advancements.htu.stone_age.furnace.title": "SMORC",
+  "advancements.htu.stone_age.furnace.desc": "Lets start from..start...",
+
+  "advancements.htu.secret.wip.title": "To early ;)",
+  "advancements.htu.secret.wip.desc": "Faster then devs!",
+
+  "htu.moreinfo.tooltip": "Hold\u00A7e Shift\u00A77  for more information",
+  "htu.fluidtank.tooltip": "Stores fluids. Retains content when broken."
+}

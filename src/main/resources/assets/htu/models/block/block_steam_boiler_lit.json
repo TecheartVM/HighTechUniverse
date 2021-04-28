@@ -1,0 +1,13 @@
+{
+  "parent":"block/cube",
+  "textures":
+  {
+    "up":"htu:blocks/block_steam_boiler_top",
+    "down":"htu:blocks/block_steam_boiler_bottom",
+    "north":"htu:blocks/block_steam_boiler_front_on",
+    "east":"htu:blocks/block_steam_boiler_side",
+    "south":"htu:blocks/block_steam_boiler_side",
+    "west":"htu:blocks/block_steam_boiler_side",
+    "particle":"htu:blocks/block_steam_boiler_side"
+  }
+}

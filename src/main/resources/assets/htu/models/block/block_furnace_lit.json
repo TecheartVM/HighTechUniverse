@@ -1,0 +1,13 @@
+{
+  "parent":"block/cube",
+  "textures":
+  {
+    "up":"htu:blocks/furnace_side_off",
+    "down":"htu:blocks/furnace_side_off",
+    "north":"htu:blocks/furnace_front_on",
+    "east":"htu:blocks/furnace_side_on",
+    "south":"htu:blocks/furnace_side_on",
+    "west":"htu:blocks/furnace_side_on",
+    "particle":"htu:blocks/furnace_side_on"
+  }
+}

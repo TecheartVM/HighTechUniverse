@@ -1,0 +1,12 @@
+{
+  "type": "htu:alloying_recipe",
+  "result": { "item": "htu:ingot_bronze", "count": 4 },
+  "ingredients":
+  [
+    { "item": "htu:ingot_copper", "count": 3 },
+    { "item": "htu:ingot_tin", "count": 1 }
+  ],
+  "tier": 0,
+  "time": 60,
+  "experience": 4.0
+}

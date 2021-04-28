@@ -1,0 +1,13 @@
+{
+  "parent":"block/cube",
+  "textures":
+  {
+    "up":"htu:blocks/smeltery_side",
+    "down":"htu:blocks/smeltery_side",
+    "north":"htu:blocks/smeltery_front_on",
+    "east":"htu:blocks/smeltery_side",
+    "south":"htu:blocks/smeltery_side",
+    "west":"htu:blocks/smeltery_side",
+    "particle":"htu:blocks/smeltery_side"
+  }
+}

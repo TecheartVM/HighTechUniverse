@@ -1,0 +1,13 @@
+{
+  "variants":
+  {
+    "facing=north,lit=false":{"model":"htu:block/block_steam_boiler"},
+    "facing=east,lit=false" :{"model":"htu:block/block_steam_boiler","y":90},
+    "facing=south,lit=false":{"model":"htu:block/block_steam_boiler","y":180},
+    "facing=west,lit=false" :{"model":"htu:block/block_steam_boiler","y":270},
+    "facing=north,lit=true":{"model":"htu:block/block_steam_boiler_lit"},
+    "facing=east,lit=true" :{"model":"htu:block/block_steam_boiler_lit","y":90},
+    "facing=south,lit=true":{"model":"htu:block/block_steam_boiler_lit","y":180},
+    "facing=west,lit=true" :{"model":"htu:block/block_steam_boiler_lit","y":270}
+  }
+}

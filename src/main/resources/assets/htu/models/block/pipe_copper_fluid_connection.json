@@ -1,0 +1,34 @@
+{
+    "__comment": "Model generated using MrCrayfish's Model Creator (https://mrcrayfish.com/tools?id=mc)",
+    "textures": {
+        "pipe_copper_fluid": "htu:blocks/pipe_copper_fluid",
+        "particle": "htu:blocks/block_copper"
+    },
+    "elements": [
+        {
+            "name": "Connection",
+            "from": [ 3, 3, 0 ], 
+            "to": [ 13, 13, 1 ],
+            "faces": {
+                "north": { "texture": "#pipe_copper_fluid", "uv": [ 4, 0, 9, 5 ] },
+                "east": { "texture": "#pipe_copper_fluid", "uv": [ 9, 0, 9, 5 ] },
+                "south": { "texture": "#pipe_copper_fluid", "uv": [ 4, 0, 9, 5 ] },
+                "west": { "texture": "#pipe_copper_fluid", "uv": [ 9, 0, 9, 5 ] },
+                "up": { "texture": "#pipe_copper_fluid", "uv": [ 4, 5, 9, 5 ] },
+                "down": { "texture": "#pipe_copper_fluid", "uv": [ 4, 5, 9, 5 ] }
+            }
+        },
+        {
+            "name": "Extension",
+            "from": [ 4, 4, 1 ], 
+            "to": [ 12, 12, 4 ],
+            "faces": {
+                "east": { "texture": "#pipe_copper_fluid", "uv": [ 1.5, 0, 2.5, 4 ] },
+                "south": { "texture": "#pipe_copper_fluid", "uv": [ 0, 0, 4, 4 ] },
+                "west": { "texture": "#pipe_copper_fluid", "uv": [ 1.5, 0, 2.5, 4 ] },
+                "up": { "texture": "#pipe_copper_fluid", "uv": [ 0, 1.5, 4, 2.5 ] },
+                "down": { "texture": "#pipe_copper_fluid", "uv": [ 0, 1.5, 4, 2.5 ] }
+            }
+        }
+    ]
+}

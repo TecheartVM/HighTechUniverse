@@ -1,0 +1,25 @@
+{
+  "multipart": [
+    {
+      "apply": { "model": "htu:block/pipe_copper_fluid_base" }
+    },
+    {   "when": { "north": true },
+      "apply": { "model": "htu:block/pipe_copper_fluid_connection", "uvlock": false }
+    },
+    {   "when": { "east": true },
+      "apply": { "model": "htu:block/pipe_copper_fluid_connection", "y": 90, "uvlock": false }
+    },
+    {   "when": { "south": true },
+      "apply": { "model": "htu:block/pipe_copper_fluid_connection", "y": 180, "uvlock": false }
+    },
+    {   "when": { "west": true },
+      "apply": { "model": "htu:block/pipe_copper_fluid_connection", "y": 270, "uvlock": false }
+    },
+    {   "when": { "up": true },
+      "apply": { "model": "htu:block/pipe_copper_fluid_connection", "x": 270, "uvlock": false }
+    },
+    {   "when": { "down": true },
+      "apply": { "model": "htu:block/pipe_copper_fluid_connection", "x": 90, "uvlock": false }
+    }
+  ]
+}

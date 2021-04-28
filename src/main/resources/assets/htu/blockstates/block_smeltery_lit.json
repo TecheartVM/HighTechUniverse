@@ -1,0 +1,9 @@
+{
+  "variants":
+  {
+    "facing=north":{"model":"htu:block_smeltery_lit"},
+    "facing=east" :{"model":"htu:block_smeltery_lit","y":90},
+    "facing=south":{"model":"htu:block_smeltery_lit","y":180},
+    "facing=west" :{"model":"htu:block_smeltery_lit","y":270}
+  }
+}

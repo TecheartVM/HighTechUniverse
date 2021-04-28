@@ -1,0 +1,6 @@
+{
+  "variants":
+  {
+    "": { "model": "htu:block/block_fluid_tank" }
+  }
+}

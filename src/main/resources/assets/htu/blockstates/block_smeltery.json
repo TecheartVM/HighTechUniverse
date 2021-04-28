@@ -1,0 +1,13 @@
+{
+  "variants":
+  {
+    "facing=north,lit=false":{"model":"htu:block/block_smeltery"},
+    "facing=east,lit=false" :{"model":"htu:block/block_smeltery","y":90},
+    "facing=south,lit=false":{"model":"htu:block/block_smeltery","y":180},
+    "facing=west,lit=false" :{"model":"htu:block/block_smeltery","y":270},
+    "facing=north,lit=true":{"model":"htu:block/block_smeltery_lit"},
+    "facing=east,lit=true" :{"model":"htu:block/block_smeltery_lit","y":90},
+    "facing=south,lit=true":{"model":"htu:block/block_smeltery_lit","y":180},
+    "facing=west,lit=true" :{"model":"htu:block/block_smeltery_lit","y":270}
+  }
+}
