@@ -132,7 +132,7 @@ public class TileEntityConduit extends TileEntity implements IFluidConduit, ITic
         int averageAmount = tank.getFluidAmount();
         for (Connection c : neighbours)
             averageAmount += c.fluidHandler.drain(new FluidStack(tank.getFluid(), Integer.MAX_VALUE), FluidAction.SIMULATE).getAmount();
-        averageAmount = Math.floorDiv(averageAmount, neighbours.size());
+        averageAmount = Math.floorDiv(averageAmount, neighbours.size() + 1);
 
         //System.out.println(averageAmount);
 
@@ -144,11 +144,12 @@ public class TileEntityConduit extends TileEntity implements IFluidConduit, ITic
             {
                 //getting amount of required fluid
                 int toFill = c.fluidHandler.drain(new FluidStack(tank.getFluid(), Integer.MAX_VALUE), FluidAction.SIMULATE).getAmount();
-                System.out.println("Fluid in neighbour: " + toFill + " In this pipe: " + tank.getFluid().getAmount());
-                System.out.println("Average amount: " + averageAmount);
+                if(toFill >= tank.getFluidAmount()) continue;
+                //System.out.println("Fluid in neighbour: " + toFill + " In this pipe: " + tank.getFluid().getAmount());
+                //System.out.println("Average amount: " + averageAmount);
                 //getting amount of fluid we need to send to reach the average amount
                 toFill = averageAmount - toFill;
-                if(toFill > 0) //TODO fix filling pipes with larger amount of fluid
+                if(toFill > 0)
                 {
                     //getting amount, restricted by transfer rate
                     toFill = Math.min(toFill, TRANSFER_RATE);
@@ -156,10 +157,10 @@ public class TileEntityConduit extends TileEntity implements IFluidConduit, ITic
                     transferredAmount += ((TileEntityConduit)c.tile).fill(new FluidStack(tank.getFluid(), toFill), FluidAction.EXECUTE, c.side);
                 }
             }
-            else System.out.println("Can't fill source!");
+            //else System.out.println("Can't fill source!");
         }
 
-        System.out.println("Transferred amount: " + transferredAmount);
+        //System.out.println("Transferred amount: " + transferredAmount);
         return transferredAmount;
     }
 
