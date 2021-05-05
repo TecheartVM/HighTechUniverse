@@ -166,21 +166,22 @@ public class ContainerSteamBoiler extends Container
         int i = 0;
         int f = 0;
 
-        switch (field)
-        {
-            case 0: i = TileEntitySteamBoiler.internalVolumeWater;
-                f = 2;
-                break;
-            case 1: i = TileEntitySteamBoiler.internalVolumeSteam;
-                f = 3;
-                break;
-            case 2: i = TileEntitySteamBoiler.maxTemperature;
-                f = 4;
-                break;
-            case 3: i = TileEntitySteamBoiler.maxPressure;
-                f = 5;
-                break;
-        }
+        //TODO !!!
+//        switch (field)
+//        {
+//            case 0: i = TileEntitySteamBoiler.internalVolumeWater;
+//                f = 2;
+//                break;
+//            case 1: i = TileEntitySteamBoiler.internalVolumeSteam;
+//                f = 3;
+//                break;
+//            case 2: i = TileEntitySteamBoiler.maxTemperature;
+//                f = 4;
+//                break;
+//            case 3: i = TileEntitySteamBoiler.maxPressure;
+//                f = 5;
+//                break;
+//        }
         if(f <= 0) return 0;
         f = this.tileEntity.getField(f);
         return f * pixels / i;

@@ -36,24 +36,11 @@ import java.util.Random;
 
 public class TileEntitySteamBoiler extends TileEntityIgnitable implements ISidedInventory, INamedContainerProvider, ITickableTileEntity
 {
-    private Random random = new Random();
-
-    //internal tanks volume constants in mB
-    public static final int internalVolumeWater = 4000;
-    public static final int internalVolumeSteam = 4000;
+    private final Random random = new Random();
 
     //temperature constants
     public static final int maxTemperature = 120;
     public static final int minTemperature = -30;
-    public static final int conversionTemperature = 100;
-
-    //pressure constants
-    public static final int maxPressure = 640;
-    public static final int initialPressure = 40;
-    public static final int ejectionPressure = 560;
-
-    public static final int waterConsumptionRate = 1;
-    public static final int conversionFactor = 3;
 
     //tracked fields
     private int burnTime;
@@ -66,28 +53,15 @@ public class TileEntitySteamBoiler extends TileEntityIgnitable implements ISided
 
     private ITextComponent customName;
 
-    //fluid constant links
-    private static final Fluid WATER = Fluids.WATER;
-    private static final Fluid STEAM = RegistryHandler.FLUID_STEAM.get();
-
-    private final HTUFluidTank tankWater;
-    private final HTUFluidTank tankSteam;
-
     private NonNullList<ItemStack> inventory = NonNullList.withSize(1, ItemStack.EMPTY);
 
     public TileEntitySteamBoiler()
     {
         super(RegistryHandler.STEAM_BOILER.getMainBlock().getMachineTile());
 
-        int steamVolume = internalVolumeSteam + (Math.floorDiv(internalVolumeSteam, ejectionPressure) * (maxPressure - ejectionPressure));
-
-        tankWater = new HTUFluidTank(internalVolumeWater, WATER, HTUFluidTank.Type.INSERT_ONLY);
-        tankSteam = new HTUFluidTank(steamVolume, STEAM, HTUFluidTank.Type.EJECT_ONLY);
-
         if(world != null && pos != null)
             ambientTemperature = HTUHooks.getAmbientTemperature(world, pos);
         temperature = ambientTemperature;
-        pressure = initialPressure;
     }
 
     @Override
@@ -97,6 +71,10 @@ public class TileEntitySteamBoiler extends TileEntityIgnitable implements ISided
 
         if (!this.world.isRemote)
         {
+
+
+            tickIgnition();
+
 
         }
     }
@@ -181,9 +159,6 @@ public class TileEntitySteamBoiler extends TileEntityIgnitable implements ISided
 
         this.inventory = NonNullList.<ItemStack>withSize(this.getSizeInventory(), ItemStack.EMPTY);
         ItemStackHelper.loadAllItems(nbt, this.inventory);
-
-        tankWater.readFromNBT(nbt);
-        tankSteam.readFromNBT(nbt);
     }
 
     @Override
@@ -200,9 +175,6 @@ public class TileEntitySteamBoiler extends TileEntityIgnitable implements ISided
         nbt.putInt("FuelTemperature", this.fuelBurnTemperature);
 
         ItemStackHelper.saveAllItems(nbt, this.inventory);
-
-        tankWater.writeToNBT(nbt);
-        tankSteam.writeToNBT(nbt);
 
         return nbt;
     }
@@ -242,9 +214,9 @@ public class TileEntitySteamBoiler extends TileEntityIgnitable implements ISided
                 break;
             case 1: field = this.burnTimeTotal;
                 break;
-            case 2: field = this.tankWater.getFluidAmount();
+            case 2: //field = this.tankWater.getFluidAmount();
                 break;
-            case 3: field = this.tankSteam.getFluidAmount();
+            case 3: //field = this.tankSteam.getFluidAmount();
                 break;
             case 4: field = this.temperature;
                 break;

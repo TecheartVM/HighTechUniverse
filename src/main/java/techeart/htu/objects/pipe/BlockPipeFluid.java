@@ -20,6 +20,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
+import techeart.htu.objects.grids.TileEntityConduit;
 import techeart.htu.utils.ModUtils;
 import techeart.htu.utils.RegistryHandler;
 
@@ -78,7 +79,7 @@ public class BlockPipeFluid extends SixWayBlock implements ITileEntityProvider
             TileEntity tileEntity = worldIn.getTileEntity(currentPos);
             if(tileEntity != null && tileEntity.getType() == RegistryHandler.FLUID_PIPE_TE.get())
             {
-                ((TileEntityPipeFluid)tileEntity).updateGrid();
+                //((TileEntityPipeFluid)tileEntity).updateGrid();
             }
         }
 
@@ -92,7 +93,7 @@ public class BlockPipeFluid extends SixWayBlock implements ITileEntityProvider
         if(tileEntity != null && tileEntity.getType() == RegistryHandler.FLUID_PIPE_TE.get())
         {
             if(!worldIn.isRemote) //System.out.println("Fluid inside: " + ((TileEntityPipeFluid)tileEntity).getFluidInTank(0).getAmount());
-                ModUtils.playerInfoMessage("Fluid inside: " + ((TileEntityPipeFluid)tileEntity).getFluidInTank(0).getAmount() + " mb", player);
+                ModUtils.playerInfoMessage("Fluid inside: " + ((TileEntityConduit)tileEntity).getFluidInTank(0).getAmount() + " mb", player);
         }
         return super.onBlockActivated(state, worldIn, pos, player, handIn, hit);
     }

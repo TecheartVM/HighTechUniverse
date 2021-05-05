@@ -20,6 +20,7 @@ import techeart.htu.objects.boiler.*;
 import techeart.htu.objects.fluids.FluidSteam;
 import techeart.htu.objects.furnace.BlockPrimitiveFurnace;
 import techeart.htu.objects.furnace.TileEntityPrimitiveFurnace;
+import techeart.htu.objects.grids.TileEntityConduit;
 import techeart.htu.objects.pipe.BlockPipeFluid;
 import techeart.htu.objects.pipe.TileEntityPipeFluid;
 import techeart.htu.objects.pump.BlockWaterPump;
@@ -83,7 +84,7 @@ public class RegistryHandler
 
     //pipe
     public static final DoubleRegisteredObject<Block,Item> BLOCK_PIPE = MDR.register("block_pipe",new HTUBlock.Builder().setBlock(BlockPipeFluid::new).needItem(MainClass.CREATIVE_TAB_STEAM_AGE));
-    public static final RegistryObject<TileEntityType<TileEntityPipeFluid>> FLUID_PIPE_TE = MDR.register("pipe_fluid", () -> TileEntityType.Builder.create(TileEntityPipeFluid::new, RegistryHandler.BLOCK_PIPE.getPrimary()).build(null),ForgeRegistries.TILE_ENTITIES);
+    public static final RegistryObject<TileEntityType<TileEntityConduit>> FLUID_PIPE_TE = MDR.register("pipe_fluid", () -> TileEntityType.Builder.create(TileEntityConduit::new, RegistryHandler.BLOCK_PIPE.getPrimary()).build(null),ForgeRegistries.TILE_ENTITIES);
 
             /*~~~~~~~~~~~~~~~~~~~~~MISC~~~~~~~~~~~~~~~~~~*/
     public static final IRecipeType<AlloyRecipe> RECIPE_TYPE_ALLOYING = new RecipeTypeAlloying();

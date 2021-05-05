@@ -206,7 +206,7 @@ public class HorizontalPipeGrid implements IPipeGrid
         if(this.world == null)
         {
             world = ((TileEntity)pipe).getWorld();
-            if(world != null && !world.isRemote) MainClass.gridsManager.registerGrid(this);
+            //if(world != null && !world.isRemote) MainClass.gridsManager.registerGrid(this);
         }
         HorizontalPipeGrid pipeGrid = (HorizontalPipeGrid) pipe.getGrid();
         if(pipe instanceof TileEntityPipeFluid && pipeGrid != this)
@@ -281,7 +281,7 @@ public class HorizontalPipeGrid implements IPipeGrid
         pipes.clear();
         externals.clear();
         //MainClass.unregisterPipeGrid(this);
-        if(world != null && !world.isRemote) MainClass.gridsManager.unregisterGrid(this); //NBTHandler.get(world).removeSubscriber(this);
+        //if(world != null && !world.isRemote) MainClass.gridsManager.unregisterGrid(this); //NBTHandler.get(world).removeSubscriber(this);
         return pipesContent.drain(pipesContent.getCapacity(), FluidAction.EXECUTE).copy();
     }
 }

@@ -6,8 +6,8 @@ import net.minecraft.world.storage.DimensionSavedDataManager;
 import net.minecraft.world.storage.WorldSavedData;
 import net.minecraftforge.fml.server.ServerLifecycleHooks;
 import techeart.htu.MainClass;
-import techeart.htu.objects.pipe.HorizontalPipeGrid;
-import techeart.htu.objects.pipe.IPipeGrid;
+import techeart.htu.objects.grids.Grid;
+import techeart.htu.objects.grids.IGrid;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -17,20 +17,20 @@ public class WorldGridsManager
 {
     private static final String DATA_IDENTIFIER = MainClass.MODID + "_grids_nbt";
 
-    private final Set<IPipeGrid> worldGrids = new HashSet<>();
+    private final Set<IGrid> worldGrids = new HashSet<>();
     private boolean isDirty = false;
 
     private GridsDataHandler dataHandler;
     private boolean isLoaded = false;
 
     /*grids management*/
-    public void registerGrid(IPipeGrid grid)
+    public void registerGrid(IGrid grid)
     {
         worldGrids.add(grid);
         markDirty();
     }
 
-    public void unregisterGrid(IPipeGrid grid)
+    public void unregisterGrid(IGrid grid)
     {
         worldGrids.remove(grid);
         markDirty();
@@ -43,9 +43,9 @@ public class WorldGridsManager
 
     public int getGridsCount() { return worldGrids.size(); }
 
-    public IPipeGrid getGrid(UUID id)
+    public IGrid getGrid(UUID id)
     {
-        for (IPipeGrid grid : worldGrids)
+        for (IGrid grid : worldGrids)
         {
 //            System.out.println("Required id: " + id);
 //            System.out.println("Current id: " + grid.getId());
@@ -102,13 +102,11 @@ public class WorldGridsManager
         {
             if(manager.isDirty || super.isDirty())
                 return true;
-            for (IPipeGrid grid : manager.worldGrids)
+            for (IGrid grid : manager.worldGrids)
                 if (grid.isDirty())
                     return true;
             return false;
         }
-
-
 
         @Override
         public void read(CompoundNBT nbt)
@@ -120,7 +118,7 @@ public class WorldGridsManager
                 CompoundNBT gridNBT = nbt.getCompound("htuGrid" + i);
                 if(gridNBT.hasUniqueId("id"))
                 {
-                    HorizontalPipeGrid grid = new HorizontalPipeGrid(gridNBT.getUniqueId("id"));
+                    Grid grid = new Grid(gridNBT.getUniqueId("id"));
                     grid.readFromNBT(gridNBT);
                     manager.registerGrid(grid);
                 }
@@ -132,7 +130,7 @@ public class WorldGridsManager
         {
             nbt.putInt("htuGridsCount", manager.worldGrids.size());
             int counter = 0;
-            for (IPipeGrid grid : manager.worldGrids)
+            for (IGrid grid : manager.worldGrids)
             {
                 nbt.put("htuGrid" + counter, grid.writeToNBT(new CompoundNBT()));
                 counter++;
