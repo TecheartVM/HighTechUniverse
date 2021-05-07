@@ -59,8 +59,6 @@ public class TileEntityFluidTank extends TileEntity implements ITickableTileEnti
         return nbt;
     }
 
-    //TODO fix: errors on client (tileentity is null).
-    // It seems like tile isn't removing on server, when player breaks tank
     public void syncClient()
     {
         if(this.removed) return;
@@ -148,6 +146,7 @@ public class TileEntityFluidTank extends TileEntity implements ITickableTileEnti
     @Override
     public void tick()
     {
+        //TODO optimization
         TileEntity tileBelow = world.getTileEntity(pos.down());
         if(tileBelow == null) return;
         LazyOptional<IFluidHandler> lo = tileBelow.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, Direction.UP);

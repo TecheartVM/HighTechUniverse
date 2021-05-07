@@ -63,10 +63,12 @@ public class BlockPipeFluid extends SixWayBlock implements ITileEntityProvider
     public void onBlockPlacedBy(World worldIn, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack stack)
     {
         super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
+        if(worldIn.isRemote) return;
         TileEntity tileEntity = worldIn.getTileEntity(pos);
         if(tileEntity != null && tileEntity.getType() == RegistryHandler.FLUID_PIPE_TE.get())
         {
             //if(!worldIn.isRemote) ((TileEntityPipeFluid)tileEntity).createGrid();
+            ((TileEntityConduit)tileEntity).updateConnections();
         }
     }
 
@@ -80,6 +82,7 @@ public class BlockPipeFluid extends SixWayBlock implements ITileEntityProvider
             if(tileEntity != null && tileEntity.getType() == RegistryHandler.FLUID_PIPE_TE.get())
             {
                 //((TileEntityPipeFluid)tileEntity).updateGrid();
+                ((TileEntityConduit)tileEntity).updateConnections();
             }
         }
 
