@@ -1,7 +1,6 @@
 package techeart.htu.objects.grids;
 
 import net.minecraft.block.BlockState;
-import net.minecraft.fluid.Fluid;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.play.server.SUpdateTileEntityPacket;
@@ -11,7 +10,6 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.Direction;
 import net.minecraft.util.Direction8;
 import net.minecraft.util.math.ChunkPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
@@ -26,9 +24,8 @@ import techeart.htu.utils.RegistryHandler;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.*;
-import java.util.function.Consumer;
 
-public class TileEntityConduit extends TileEntity implements IFluidConduit, ITickableTileEntity, IFluidHandler
+public class TileEntityConduit extends TileEntity implements IFluidConduit, IFluidHandler//, ITickableTileEntity
 {
     public static int CAPACITY = FluidAttributes.BUCKET_VOLUME;
     public static int TRANSFER_RATE = 125;
@@ -37,6 +34,8 @@ public class TileEntityConduit extends TileEntity implements IFluidConduit, ITic
 
     protected UUID gridId;
     protected Grid grid;
+
+    public int fluidAmount = 0;
 
     public TileEntityConduit() { this(RegistryHandler.FLUID_PIPE_TE.get()); }
 
@@ -50,7 +49,14 @@ public class TileEntityConduit extends TileEntity implements IFluidConduit, ITic
     public void connectOrCreateGrid()
     {
         //check all neighbour tiles
-        Set<Connection> peripherals = forEachNonPeripheral(c -> {
+        Set<Connection> peripherals = new HashSet<>();
+        for (Connection c : connections.values())
+        {
+            if(!c.isConduit())
+            {
+                peripherals.add(c);
+                continue;
+            }
             TileEntityConduit conduit = (TileEntityConduit) c.tile;
             if(grid == null)
             {
@@ -58,9 +64,9 @@ public class TileEntityConduit extends TileEntity implements IFluidConduit, ITic
                     setGrid(conduit.grid);
             }
             else grid.mergeWith(conduit.grid);
-        });
+        }
 
-        //if grid isn't exist, create it
+        //if grid doesn't exist, create it
         if(grid == null)
         {
             setGrid(new Grid());
@@ -74,10 +80,18 @@ public class TileEntityConduit extends TileEntity implements IFluidConduit, ITic
     {
         setGrid(newGrid);
 
-        Set<Connection> peripherals = forEachNonPeripheral(c -> {
-            if(((TileEntityConduit) c.tile).grid != newGrid) onGridReconstruction(newGrid);
-        });
-
+        updateConnections();
+        Set<Connection> peripherals = new HashSet<>();
+        for (Connection c : connections.values())
+        {
+            if(!c.isConduit())
+            {
+                peripherals.add(c);
+                continue;
+            }
+            if(((TileEntityConduit) c.tile).grid != newGrid)
+                ((TileEntityConduit) c.tile).onGridReconstruction(newGrid);
+        }
         grid.addPeripherals(peripherals);
     }
 
@@ -87,30 +101,15 @@ public class TileEntityConduit extends TileEntity implements IFluidConduit, ITic
         gridId = grid.getId();
     }
 
-    /**Applies action to every non-peripheral connection. Returns the Set of rejected connections (peripherals).*/
-    protected Set<Connection> forEachNonPeripheral(Consumer<Connection> action)
-    {
-        Set<Connection> peripherals = new HashSet<>();
-        for (Direction dir : Direction.values())
-        {
-            TileEntity te = world.getTileEntity(pos.offset(dir));
-            if (te == null || te.isRemoved()) continue;
-
-            LazyOptional<IFluidHandler> lo = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, dir.getOpposite());
-            if (!lo.isPresent()) continue;
-
-            IFluidHandler fh = lo.orElse(null);
-            Connection c = new Connection(te, fh, this, dir);
-
-            if (!c.isConduit() || dir.getAxis().isVertical()) peripherals.add(c);
-            else action.accept(c);
-        }
-        return peripherals;
-    }
-
-    int timer = 0;
+    public Grid getGrid() { return grid; }
 
     protected EnumMap<Direction, Connection> connections = new EnumMap(Direction.class);
+    public Set<Connection> getConnections()
+    {
+        Set<Connection> s = new HashSet<>();
+        s.addAll(connections.values());
+        return s;
+    }
 
     public void updateConnections()
     {
@@ -129,47 +128,8 @@ public class TileEntityConduit extends TileEntity implements IFluidConduit, ITic
         }
     }
 
+    int timer = 0;
     protected Map<Direction, Integer> dirsToSources = new HashMap<>();
-    protected int transfer()
-    {
-        Fluid fluid = tank.getFluid().getFluid();
-        int fluidAvailable = tank.getFluidAmount();
-
-        Map<Connection, Integer> conduits = new HashMap<>();
-        for(Connection c : connections.values())
-        {
-            if(c.isConduit() && !c.side.getAxis().isVertical() && world.getChunkProvider().canTick(c.tile.getPos()) && !dirsToSources.containsKey(c.side))
-            {
-                int fluidInConnected = c.fluidHandler.drain(new FluidStack(fluid, Integer.MAX_VALUE), FluidAction.SIMULATE).getAmount();
-                if(fluidInConnected < fluidAvailable)
-                {
-                    conduits.put(c, fluidInConnected);
-                }
-            }
-        }
-
-        for (Map.Entry<Connection, Integer> e : conduits.entrySet())
-        {
-            int toFill = Math.min(fluidAvailable, TRANSFER_RATE);
-            fluidAvailable -= e.getKey().fluidHandler.fill(new FluidStack(fluid, toFill), FluidAction.EXECUTE);
-        }
-
-        int result = tank.getFluidAmount() - fluidAvailable;
-        System.out.println(drain(result, FluidAction.EXECUTE));
-        return result;
-    }
-
-    protected int transferDown()
-    {
-        if(dirsToSources.containsKey(Direction.DOWN)) return 0;
-        Connection bottomConnection = connections.get(Direction.DOWN);
-        if(bottomConnection == null) return 0;
-        int i = bottomConnection.fluidHandler.fill(new FluidStack(tank.getFluid(), Math.min(tank.getFluidAmount(), TRANSFER_RATE)), FluidAction.EXECUTE);
-        int j = tank.drain(i, FluidAction.EXECUTE).getAmount();
-//        System.out.println("F/D: " + i+"/"+j);
-        return i;
-    }
-
     protected int transferToNeighbours()
     {
         int fluidAvailable = tank.getFluidAmount();
@@ -289,10 +249,11 @@ public class TileEntityConduit extends TileEntity implements IFluidConduit, ITic
     }
 
     /*TileEntity*/
-    @Override
     public void tick()
     {
         if(getWorld().isRemote) return;
+
+       // System.out.println("Fluid amount: " + fluidAmount);
 
 //        if(timer < 2)
 //        {
@@ -374,10 +335,14 @@ public class TileEntityConduit extends TileEntity implements IFluidConduit, ITic
     @Override
     public void remove()
     {
-        //grid.removeConduit(this);
+        if(grid != null) grid.removeConduit(this);
         super.remove();
         //resetting grid for all of connected conduits
-        //forEachNonPeripheral(c -> ((TileEntityConduit)c.tile).onGridReconstruction(new Grid()));
+        for (Connection c : connections.values())
+        {
+            if(!c.isConduit()) continue;
+            ((TileEntityConduit)c.tile).onGridReconstruction(new Grid());
+        }
     }
 
     /*IFluidHandler*/
@@ -407,7 +372,11 @@ public class TileEntityConduit extends TileEntity implements IFluidConduit, ITic
     {
         //int result = grid == null ? 0 : grid.fill(resource, action);
         //System.out.println("Filling");
-        int result = tank.fill(resource, action);
+
+        //int result = tank.fill(resource, action);
+        int result = Math.min(resource.getAmount(), CAPACITY - fluidAmount);
+        fluidAmount += result;
+
         //System.out.println("Filled");
         //if(result <= 0) result = transferUp(resource, action);
         //syncClient();

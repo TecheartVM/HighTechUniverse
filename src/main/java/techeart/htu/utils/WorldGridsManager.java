@@ -111,18 +111,19 @@ public class WorldGridsManager
         @Override
         public void read(CompoundNBT nbt)
         {
-            manager.worldGrids.clear();
-            int count = nbt.getInt("htuGridsCount");
-            for (int i = 0; i < count; i++)
-            {
-                CompoundNBT gridNBT = nbt.getCompound("htuGrid" + i);
-                if(gridNBT.hasUniqueId("id"))
-                {
-                    Grid grid = new Grid(gridNBT.getUniqueId("id"));
-                    grid.readFromNBT(gridNBT);
-                    manager.registerGrid(grid);
-                }
-            }
+            //TODO uncomment
+//            manager.worldGrids.clear();
+//            int count = nbt.getInt("htuGridsCount");
+//            for (int i = 0; i < count; i++)
+//            {
+//                CompoundNBT gridNBT = nbt.getCompound("htuGrid" + i);
+//                if(gridNBT.hasUniqueId("id"))
+//                {
+//                    Grid grid = new Grid(gridNBT.getUniqueId("id"));
+//                    grid.readFromNBT(gridNBT);
+//                    manager.registerGrid(grid);
+//                }
+//            }
         }
 
         @Override
