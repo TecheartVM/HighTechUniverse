@@ -25,6 +25,8 @@ import techeart.htu.objects.pipe.BlockPipeFluid;
 import techeart.htu.objects.pipe.TileEntityPipeFluid;
 import techeart.htu.objects.pump.BlockWaterPump;
 import techeart.htu.objects.pump.TileEntityWaterPump;
+import techeart.htu.objects.sensors.BlockSensorFluidLevel;
+import techeart.htu.objects.sensors.TileEntitySensorFluidLevel;
 import techeart.htu.objects.smeltery.BlockSmeltery;
 import techeart.htu.objects.smeltery.ContainerSmeltery;
 import techeart.htu.objects.smeltery.GuiSmeltery;
@@ -85,6 +87,10 @@ public class RegistryHandler
     //pipe
     public static final DoubleRegisteredObject<Block,Item> BLOCK_PIPE = MDR.register("block_pipe",new HTUBlock.Builder().setBlock(BlockPipeFluid::new).needItem(MainClass.CREATIVE_TAB_STEAM_AGE));
     public static final RegistryObject<TileEntityType<TileEntityConduit>> FLUID_PIPE_TE = MDR.register("pipe_fluid", () -> TileEntityType.Builder.create(TileEntityConduit::new, RegistryHandler.BLOCK_PIPE.getPrimary()).build(null),ForgeRegistries.TILE_ENTITIES);
+
+    //sensor fluid level
+    public static final DoubleRegisteredObject<Block,Item> BLOCK_SENSOR_FLUID_LEVEL = MDR.register("block_sensor_fluid_level",new HTUBlock.Builder().setBlock(BlockSensorFluidLevel::new).needItem(MainClass.CREATIVE_TAB_STEAM_AGE));
+    public static final RegistryObject<TileEntityType<TileEntitySensorFluidLevel>> SENSOR_FLUID_LEVEL_TE = MDR.register("sensor_fluid_level", () -> TileEntityType.Builder.create(TileEntitySensorFluidLevel::new, RegistryHandler.BLOCK_SENSOR_FLUID_LEVEL.getPrimary()).build(null),ForgeRegistries.TILE_ENTITIES);
 
             /*~~~~~~~~~~~~~~~~~~~~~MISC~~~~~~~~~~~~~~~~~~*/
     public static final IRecipeType<AlloyRecipe> RECIPE_TYPE_ALLOYING = new RecipeTypeAlloying();

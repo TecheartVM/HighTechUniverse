@@ -24,6 +24,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import techeart.htu.objects.grids.RendererFluidPipe;
 import techeart.htu.objects.pipe.IPipeGrid;
+import techeart.htu.objects.sensors.RenderSensorFluidLevel;
 import techeart.htu.objects.tank.RendererFluidTank;
 import techeart.htu.recipes.alloying.AlloyRecipes;
 import techeart.htu.utils.FuelTemperatures;
@@ -84,6 +85,8 @@ public class MainClass
         //register custom renderers
         RenderTypeLookup.setRenderLayer(RegistryHandler.BLOCK_FLUID_TANK.getPrimary(), RenderType.getCutout());
         ClientRegistry.bindTileEntityRenderer(RegistryHandler.FLUID_TANK_TE.get(), RendererFluidTank::new);
+
+        ClientRegistry.bindTileEntityRenderer(RegistryHandler.SENSOR_FLUID_LEVEL_TE.get(), RenderSensorFluidLevel::new);
 
         //ClientRegistry.bindTileEntityRenderer(RegistryHandler.FLUID_PIPE_TE.get(), RendererFluidPipe::new);
 
