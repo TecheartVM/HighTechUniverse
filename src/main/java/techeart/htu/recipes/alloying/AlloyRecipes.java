@@ -7,7 +7,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraft.util.ResourceLocation;
 import techeart.htu.recipes.RecipesHelper;
 import techeart.htu.utils.InventoryHelper;
-import techeart.htu.utils.RegistryHandler;
+import techeart.htu.utils.registration.RegistryHandler;
 
 import java.util.ArrayList;
 import java.util.Comparator;

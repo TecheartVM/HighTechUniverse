@@ -20,7 +20,7 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import techeart.htu.objects.HTUFluidTank;
 import techeart.htu.utils.CapabilityUtils;
-import techeart.htu.utils.RegistryHandler;
+import techeart.htu.utils.registration.RegistryHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

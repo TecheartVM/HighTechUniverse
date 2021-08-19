@@ -1,0 +1,46 @@
+{
+	"credit": "Made with Blockbench",
+	"textures": {
+		"0": "htu:blocks/block_sensor_fluid_level_base",
+		"particle": "htu:blocks/block_copper"
+	},
+	"elements": [
+		{
+			"name": "casing",
+			"from": [6, -1, 6],
+			"to": [10, 1, 10],
+			"faces": {
+				"north": {"uv": [12, 14, 16, 16], "texture": "#0"},
+				"east": {"uv": [12, 8, 16, 10], "texture": "#0"},
+				"south": {"uv": [12, 12, 16, 14], "texture": "#0"},
+				"west": {"uv": [12, 10, 16, 12], "texture": "#0"},
+				"up": {"uv": [8, 8, 0, 0], "texture": "#0"},
+				"down": {"uv": [0, 8, 8, 16], "texture": "#0"}
+			}
+		},
+		{
+			"name": "tube",
+			"from": [7, -8, 7],
+			"to": [9, 0, 9],
+			"faces": {
+				"north": {"uv": [14, 0, 16, 8], "texture": "#0"},
+				"east": {"uv": [10, 0, 12, 8], "texture": "#0"},
+				"south": {"uv": [12, 0, 14, 8], "texture": "#0"},
+				"west": {"uv": [8, 0, 10, 8], "texture": "#0"}
+			}
+		},
+		{
+			"name": "ring",
+			"from": [6.4, -8.1, 6.4],
+			"to": [9.6, -8, 9.6],
+			"faces": {
+				"north": {"uv": [8, 15, 11, 16], "texture": "#0"},
+				"east": {"uv": [8, 15, 11, 16], "texture": "#0"},
+				"south": {"uv": [8, 15, 11, 16], "texture": "#0"},
+				"west": {"uv": [8, 15, 11, 16], "texture": "#0"},
+				"up": {"uv": [11, 13, 8, 10], "texture": "#0"},
+				"down": {"uv": [8, 13, 11, 16], "texture": "#0"}
+			}
+		}
+	]
+}

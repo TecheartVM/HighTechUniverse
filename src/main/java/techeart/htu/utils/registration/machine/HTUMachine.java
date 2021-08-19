@@ -13,9 +13,9 @@ import net.minecraftforge.common.extensions.IForgeContainerType;
 import net.minecraftforge.fml.RegistryObject;
 import net.minecraftforge.fml.network.IContainerFactory;
 import net.minecraftforge.registries.ForgeRegistries;
-import techeart.htu.utils.RegistryHandler;
 import techeart.htu.utils.registration.DoubleRegisteredObject;
 import techeart.htu.utils.registration.HTUBlock;
+import techeart.htu.utils.registration.RegistryHandler;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;

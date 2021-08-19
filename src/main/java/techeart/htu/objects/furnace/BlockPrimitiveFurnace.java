@@ -18,7 +18,7 @@ import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ToolType;
 import techeart.htu.objects.TileEntityIgnitable;
-import techeart.htu.utils.RegistryHandler;
+import techeart.htu.utils.registration.RegistryHandler;
 
 import java.util.Random;
 

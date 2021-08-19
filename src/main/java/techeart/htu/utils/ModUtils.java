@@ -4,18 +4,19 @@ import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementManager;
 import net.minecraft.advancements.PlayerAdvancements;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.fluid.Fluid;
-import net.minecraft.inventory.container.PlayerContainer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.util.Direction;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import techeart.htu.MainClass;
 
 import javax.imageio.ImageIO;
@@ -33,6 +34,11 @@ public class ModUtils
     public static void playerInfoMessage(String info, PlayerEntity playerEntity)
     {
         playerEntity.sendStatusMessage(ITextComponent.getTextComponentOrEmpty(info), true);
+    }
+
+    public static void playerInfoMessage(ITextComponent info, PlayerEntity playerEntity)
+    {
+        playerEntity.sendStatusMessage(info, true);
     }
 
     public static void addItemToPlayer(PlayerEntity player, Hand handIn, int shrinkAmount ,ItemStack newItem)
@@ -96,12 +102,68 @@ public class ModUtils
             }
         }
         catch(Exception e){
-            //e.printStackTrace();
         }
 
         return result;
     }
     public static ResourceLocation getResourceByKey(String path) {
         return new ResourceLocation(MainClass.MODID, path);
+    }
+
+
+    public static int Min(Integer[] numbers) {
+        int result = numbers[0];
+        for (int i : numbers)
+            result = Math.min(result, i);
+        return result;
+    }
+
+    public static Direction getDirByCoords(BlockPos currentPos, BlockPos targetPos) {
+        if (currentPos.north().equals(targetPos))
+            return Direction.NORTH;
+        if (currentPos.south().equals(targetPos))
+            return Direction.SOUTH;
+        if (currentPos.east().equals(targetPos))
+            return Direction.EAST;
+        if (currentPos.west().equals(targetPos))
+            return Direction.WEST;
+        if (currentPos.down().equals(targetPos))
+            return Direction.DOWN;
+        if (currentPos.up().equals(targetPos))
+            return Direction.UP;
+        throw new RuntimeException("Only 1 block distance is supported!");
+
+    }
+
+    public static BlockPos getPosByDir(BlockPos pos, Direction dir){
+        if(dir == Direction.UP)
+            return pos.up();
+        if(dir == Direction.DOWN)
+            return pos.down();
+        if(dir == Direction.SOUTH)
+            return pos.south();
+        if(dir == Direction.EAST)
+            return pos.east();
+        if(dir == Direction.NORTH)
+            return pos.north();
+
+        return pos.west();
+    }
+
+    public static boolean isVerticalDirection(Direction dir)
+    {
+        return dir == Direction.DOWN || dir == Direction.UP;
+    }
+
+    public static int getValidTank(IFluidHandler fh, FluidStack fluid)
+    {
+        int tanks = fh.getTanks();
+        for(int i =0; i<tanks; i++)
+        {
+            if(fh.isFluidValid(i,fluid))
+                return i;
+        }
+
+        return -1;
     }
 }

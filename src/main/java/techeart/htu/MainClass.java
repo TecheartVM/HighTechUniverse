@@ -5,8 +5,6 @@ import net.minecraft.client.gui.ScreenManager;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.RenderTypeLookup;
 import net.minecraft.fluid.Fluid;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipeSerializer;
 import net.minecraft.util.Util;
 import net.minecraftforge.client.event.RecipesUpdatedEvent;
@@ -22,17 +20,17 @@ import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import techeart.htu.objects.pipe.IPipeGrid;
+import techeart.htu.objects.sensors.level.RenderSensorFluidLevel;
+import techeart.htu.objects.sensors.temperature.RenderSensorTemperature;
 import techeart.htu.objects.tank.RendererFluidTank;
 import techeart.htu.recipes.alloying.AlloyRecipes;
 import techeart.htu.utils.FuelTemperatures;
-import techeart.htu.utils.RegistryHandler;
-import techeart.htu.utils.WorldGridsManager;
+import techeart.htu.utils.network.HTUPacketHandler;
+import techeart.htu.utils.registration.RegistryHandler;
+import techeart.htu.utils.world.HTUGridManager;
 import techeart.htu.world.gen.OreGeneration;
 
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 /* GLOBAL TODO LIST:
            1. FISH!
@@ -41,11 +39,11 @@ import java.util.Set;
            4. Clean up code
            5. Create GUI draw helper
            6. Pump animation + InputOutput system + New working algorithm
-           7. Tank (Rotating + locking + stacking)
+           7. Tank (Rotating + locking)
            8. Base classes
            9. Temperature system(s?)
            10. Universal bucket
-           11. Wrench
+           11. Wrench functionality
 */
 @Mod("htu")
 @Mod.EventBusSubscriber
@@ -56,7 +54,7 @@ public class MainClass
 
     public static final Logger LOGGER = LogManager.getLogger();
 
-    public static final WorldGridsManager gridsManager = new WorldGridsManager();
+    public static final HTUPacketHandler PACKET_HANDLER = new HTUPacketHandler();
 
     public MainClass()
     {
@@ -72,6 +70,8 @@ public class MainClass
     private void setup(final FMLCommonSetupEvent event)
     {
         OreGeneration.setupOreGenerator();
+
+        PACKET_HANDLER.init();
     }
 
     private void setupClient(final FMLClientSetupEvent event)
@@ -83,6 +83,10 @@ public class MainClass
         //register custom renderers
         RenderTypeLookup.setRenderLayer(RegistryHandler.BLOCK_FLUID_TANK.getPrimary(), RenderType.getCutout());
         ClientRegistry.bindTileEntityRenderer(RegistryHandler.FLUID_TANK_TE.get(), RendererFluidTank::new);
+
+        ClientRegistry.bindTileEntityRenderer(RegistryHandler.SENSOR_FLUID_LEVEL_TE.get(), RenderSensorFluidLevel::new);
+
+        ClientRegistry.bindTileEntityRenderer(RegistryHandler.SENSOR_TEMPERATURE_TE.get(), RenderSensorTemperature::new);
 
         //register fluid render types
         final Map<Fluid, RenderType> FLUID_RENDER_TYPES = Util.make(Maps.newHashMap(), (map) -> {
@@ -104,55 +108,39 @@ public class MainClass
     {
         FuelTemperatures.init();
     }
-    @SubscribeEvent
-    public void onServerStop(FMLServerStoppingEvent event)
-    {
-        gridsManager.reset();
-    }
-    @SubscribeEvent
-    public void onWorldTick(FMLServerStartingEvent event) { gridsManager.onServerWorldTick(event.getServer().func_241755_D_()); }
-
-    public static final ItemGroup CREATIVE_TAB_STEAM_AGE = new ItemGroup("htu.steam_creative_tab")
-    {
-        @Override
-        public ItemStack createIcon() { return new ItemStack(RegistryHandler.STEAM_BOILER.getMainBlock().getItem()); }
-    };
-
-    public static final ItemGroup CREATIVE_TAB_PRIMAL_AGE = new ItemGroup("htu.primal_creative_tab")
-    {
-        @Override
-        public ItemStack createIcon() { return new ItemStack(RegistryHandler.PRIMITIVE_FURNACE.getMainBlock().getItem()); }
-    };
-
-    private static final Set<IPipeGrid> worldPipeGrids = new HashSet<>();
 
     @SubscribeEvent
     public static void onServerTick(TickEvent.ServerTickEvent event)
     {
-        gridsManager.onServerTick();
+        HTUGridManager.SELF.serverTick();
     }
 
     @SubscribeEvent
     public static void onWorldTick(TickEvent.WorldTickEvent event)
     {
         if(event.side.isServer() && event.phase == TickEvent.Phase.END)
-        {
-            gridsManager.onServerWorldTick(event.world);
-        }
+            HTUGridManager.SELF.worldTick();
     }
 
     @SubscribeEvent
-    public static void onServerStopping(FMLServerStoppingEvent event)
+    public void onServerStop(FMLServerStoppingEvent event)
     {
-        gridsManager.reset();
+        HTUGridManager.SELF.reset();
     }
+
+    @SubscribeEvent
+    public void onWorldTick(FMLServerStartingEvent event) {
+//        GRIDS_MANAGER.onServerWorldTick(event.getServer().func_241755_D_());
+    }
+
+//    @SubscribeEvent
+//    public static void onBlockRightClicked(PlayerInteractEvent.RightClickBlock event)
+//    {
+//        if(event.getItemStack().getItem() instanceof IWrench)
+//            event.setUseBlock(Event.Result.DENY);
+//    }
+
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~DebugZone~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-
-//    public static boolean registerPipeGrid(IPipeGrid grid) { return worldPipeGrids.add(grid); }
-//    public static boolean unregisterPipeGrid(IPipeGrid grid) { return worldPipeGrids.remove(grid); }
-
-
-
 
 
 //    @SubscribeEvent

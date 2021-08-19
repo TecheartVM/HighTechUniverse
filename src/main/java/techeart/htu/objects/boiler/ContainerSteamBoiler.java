@@ -5,16 +5,14 @@ import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.inventory.container.Container;
 import net.minecraft.inventory.container.IContainerListener;
 import net.minecraft.inventory.container.Slot;
-import net.minecraft.item.ItemStack;
 import net.minecraft.network.PacketBuffer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.IWorldPosCallable;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
-import net.minecraftforge.common.ForgeHooks;
 import techeart.htu.objects.inventory.slots.HTUFurnaceFuelSlot;
 import techeart.htu.utils.HTUIntReferenceHolder;
-import techeart.htu.utils.RegistryHandler;
+import techeart.htu.utils.registration.RegistryHandler;
 
 import java.util.Objects;
 
@@ -99,64 +97,65 @@ public class ContainerSteamBoiler extends Container
         return isWithinUsableDistance(IWorldPosCallable.of(tileEntity.getWorld(), tileEntity.getPos()), playerIn, RegistryHandler.STEAM_BOILER.getMainBlock().getBlock());
     }
 
-    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index)
-    {
-        ItemStack itemstack = ItemStack.EMPTY;
-        Slot slot = this.inventorySlots.get(index);
-
-        if (slot != null && slot.getHasStack())
-        {
-            ItemStack itemstack1 = slot.getStack();
-            itemstack = itemstack1.copy();
-
-            if (index != 0)
-            {
-                if (ForgeHooks.getBurnTime(itemstack1) > 0)
-                {
-                    if (!this.mergeItemStack(itemstack1, 0, 1, false))
-                    {
-                        return ItemStack.EMPTY;
-                    }
-                }
-                else
-                {
-                    if (index > 0 && index < 28)
-                    {
-                        if (!this.mergeItemStack(itemstack1, 28, 37, false))
-                        {
-                            return ItemStack.EMPTY;
-                        }
-                    }
-                    else if (index >= 28 && index < 37 && !this.mergeItemStack(itemstack1, 1, 28, false))
-                    {
-                        return ItemStack.EMPTY;
-                    }
-                }
-            }
-            else if (!this.mergeItemStack(itemstack1, 1, 37, false))
-            {
-                return ItemStack.EMPTY;
-            }
-
-            if (itemstack1.isEmpty())
-            {
-                slot.putStack(ItemStack.EMPTY);
-            }
-            else
-            {
-                slot.onSlotChanged();
-            }
-
-            if (itemstack1.getCount() == itemstack.getCount())
-            {
-                return ItemStack.EMPTY;
-            }
-
-            slot.onTake(playerIn, itemstack1);
-        }
-
-        return itemstack;
-    }
+//    @Override
+//    public ItemStack transferStackInSlot(PlayerEntity playerIn, int index)
+//    {
+//        ItemStack itemstack = ItemStack.EMPTY;
+//        Slot slot = this.inventorySlots.get(index);
+//
+//        if (slot != null && slot.getHasStack())
+//        {
+//            ItemStack itemstack1 = slot.getStack();
+//            itemstack = itemstack1.copy();
+//
+//            if (index != 0)
+//            {
+//                if (ForgeHooks.getBurnTime(itemstack1) > 0)
+//                {
+//                    if (!this.mergeItemStack(itemstack1, 0, 1, false))
+//                    {
+//                        return ItemStack.EMPTY;
+//                    }
+//                }
+//                else
+//                {
+//                    if (index > 0 && index < 28)
+//                    {
+//                        if (!this.mergeItemStack(itemstack1, 28, 37, false))
+//                        {
+//                            return ItemStack.EMPTY;
+//                        }
+//                    }
+//                    else if (index >= 28 && index < 37 && !this.mergeItemStack(itemstack1, 1, 28, false))
+//                    {
+//                        return ItemStack.EMPTY;
+//                    }
+//                }
+//            }
+//            else if (!this.mergeItemStack(itemstack1, 1, 37, false))
+//            {
+//                return ItemStack.EMPTY;
+//            }
+//
+//            if (itemstack1.isEmpty())
+//            {
+//                slot.putStack(ItemStack.EMPTY);
+//            }
+//            else
+//            {
+//                slot.onSlotChanged();
+//            }
+//
+//            if (itemstack1.getCount() == itemstack.getCount())
+//            {
+//                return ItemStack.EMPTY;
+//            }
+//
+//            slot.onTake(playerIn, itemstack1);
+//        }
+//
+//        return itemstack;
+//    }
 
     public boolean isBurning() { return tileEntity.isBurning(); }
 
@@ -166,21 +165,22 @@ public class ContainerSteamBoiler extends Container
         int i = 0;
         int f = 0;
 
-        switch (field)
-        {
-            case 0: i = TileEntitySteamBoiler.internalVolumeWater;
-                f = 2;
-                break;
-            case 1: i = TileEntitySteamBoiler.internalVolumeSteam;
-                f = 3;
-                break;
-            case 2: i = TileEntitySteamBoiler.maxTemperature;
-                f = 4;
-                break;
-            case 3: i = TileEntitySteamBoiler.maxPressure;
-                f = 5;
-                break;
-        }
+        //TODO !!!
+//        switch (field)
+//        {
+//            case 0: i = TileEntitySteamBoiler.internalVolumeWater;
+//                f = 2;
+//                break;
+//            case 1: i = TileEntitySteamBoiler.internalVolumeSteam;
+//                f = 3;
+//                break;
+//            case 2: i = TileEntitySteamBoiler.maxTemperature;
+//                f = 4;
+//                break;
+//            case 3: i = TileEntitySteamBoiler.maxPressure;
+//                f = 5;
+//                break;
+//        }
         if(f <= 0) return 0;
         f = this.tileEntity.getField(f);
         return f * pixels / i;

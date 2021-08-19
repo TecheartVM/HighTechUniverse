@@ -13,7 +13,7 @@ import net.minecraft.util.NonNullList;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import techeart.htu.utils.HTUIntReferenceHolder;
-import techeart.htu.utils.RegistryHandler;
+import techeart.htu.utils.registration.RegistryHandler;
 
 import java.util.Objects;
 

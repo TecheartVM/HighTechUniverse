@@ -13,7 +13,7 @@ import net.minecraft.world.gen.feature.Feature;
 import net.minecraft.world.gen.feature.OreFeatureConfig;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import techeart.htu.MainClass;
-import techeart.htu.utils.RegistryHandler;
+import techeart.htu.utils.registration.RegistryHandler;
 
 import java.util.ArrayList;
 import java.util.List;

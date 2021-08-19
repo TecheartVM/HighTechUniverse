@@ -70,7 +70,7 @@ public class GuiSteamBoiler extends ContainerScreen<ContainerSteamBoiler>
         this.blit(matrixStack, this.guiLeft + 26, this.guiTop + 9, 26, 9, 16, 64 - w);
 
         //get and bind steam texture
-        sprite = minecraft.getModelManager().getAtlasTexture(PlayerContainer.LOCATION_BLOCKS_TEXTURE).getSprite(FluidSteam.STEAM.getAttributesForGui().getStillTexture());
+        sprite = minecraft.getModelManager().getAtlasTexture(PlayerContainer.LOCATION_BLOCKS_TEXTURE).getSprite(FluidSteam.Source.getAttributesForGui().getStillTexture());
         this.minecraft.getTextureManager().bindTexture(sprite.getAtlasTexture().getTextureLocation());
 
         //setup alpha blend for steam texture

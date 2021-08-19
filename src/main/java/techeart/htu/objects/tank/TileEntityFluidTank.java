@@ -17,10 +17,12 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
-import techeart.htu.utils.RegistryHandler;
+import techeart.htu.utils.registration.RegistryHandler;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+
+import static techeart.htu.objects.conduits.pipe.FluidConduit.TRANSFER_RATE;
 
 public class TileEntityFluidTank extends TileEntity implements ITickableTileEntity
 {
@@ -59,8 +61,6 @@ public class TileEntityFluidTank extends TileEntity implements ITickableTileEnti
         return nbt;
     }
 
-    //TODO fix: errors on client (tileentity is null).
-    // It seems like tile isn't removing on server, when player breaks tank
     public void syncClient()
     {
         if(this.removed) return;
@@ -148,11 +148,12 @@ public class TileEntityFluidTank extends TileEntity implements ITickableTileEnti
     @Override
     public void tick()
     {
+        //TODO optimization
         TileEntity tileBelow = world.getTileEntity(pos.down());
         if(tileBelow == null) return;
         LazyOptional<IFluidHandler> lo = tileBelow.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, Direction.UP);
         if(!lo.isPresent()) return;
         IFluidHandler fh = lo.orElse(null);
-        drain(fh.fill(new FluidStack(internalVolume.getFluid(), 125), FluidAction.EXECUTE), FluidAction.EXECUTE);
+        drain(fh.fill(new FluidStack(internalVolume.getFluid(), Math.min(internalVolume.getFluidAmount(),TRANSFER_RATE)), FluidAction.EXECUTE), FluidAction.EXECUTE);
     }
 }

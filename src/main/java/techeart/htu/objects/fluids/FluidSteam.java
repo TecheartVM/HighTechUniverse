@@ -10,7 +10,7 @@ import net.minecraft.world.IWorldReader;
 import net.minecraftforge.fluids.FluidAttributes;
 import net.minecraftforge.fluids.ForgeFlowingFluid;
 import techeart.htu.MainClass;
-import techeart.htu.utils.RegistryHandler;
+import techeart.htu.utils.registration.RegistryHandler;
 
 public abstract class FluidSteam
 {

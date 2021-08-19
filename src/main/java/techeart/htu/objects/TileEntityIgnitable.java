@@ -3,17 +3,15 @@ package techeart.htu.objects;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
-import techeart.htu.objects.boiler.TileEntitySteamBoiler;
 
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
 
-public abstract class TileEntityIgnitable extends TileEntity
+public abstract class TileEntityIgnitable extends HTUTileEntity
 {
     public static final Set<Item> IGNITION_TOOLS = new HashSet<>();
     static
@@ -22,7 +20,7 @@ public abstract class TileEntityIgnitable extends TileEntity
     }
     public static boolean isIgnitionTool(Item item) { return IGNITION_TOOLS.contains(item); }
 
-    public static boolean interactWithIgnitable(TileEntityIgnitable tile, ItemStack heldItem)
+    public static boolean interact(TileEntityIgnitable tile, ItemStack heldItem)
     {
         if(TileEntityIgnitable.isIgnitionTool(heldItem.getItem()))
         {

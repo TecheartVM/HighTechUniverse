@@ -4,29 +4,22 @@ import net.minecraft.block.Block;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
-import techeart.htu.MainClass;
-import techeart.htu.utils.interfaces.IHasModel;
+import techeart.htu.CreativeTabs;
 
 import javax.annotation.Nullable;
 
-public class HTUItem extends Item implements IHasModel
+public class HTUItem extends Item
 {
     public HTUItem(ItemGroup itemGroup)
     {
         super(new Item.Properties().group(itemGroup));
     }
 
-    public HTUItem() { super(new Properties().group(MainClass.CREATIVE_TAB_STEAM_AGE)); }
+    public HTUItem() { super(new Properties().group(CreativeTabs.STEAM_AGE)); }
 
     public HTUItem(Properties props)
     {
         super(props);
-    }
-
-    @Override
-    public void registerModels()
-    {
-        //MainClass.proxy.registerItemModel(this, 0, "inventory");
     }
 
     public static class Builder //TODO: Make this thing more useful

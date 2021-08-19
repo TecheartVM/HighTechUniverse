@@ -23,7 +23,11 @@
 
   "block.htu.block_fluid_tank": "Fluid tank",
   "block.htu.block_pipe": "Fluid pipe",
-  "block.htu.block_water_pump": "Steam water pump",
+
+  "block.htu.block_water_pump": "Steam Water Pump",
+
+  "block.htu.block_sensor_fluid_level": "Fluid Level Sensor",
+  "block.htu.block_sensor_temperature": "Thermometer",
 
   "advancements.htu.steam_age.root.title":"HTU Steam age",
   "advancements.htu.steam_age.root.desc": "Start a new age of progress",
@@ -41,5 +45,11 @@
   "advancements.htu.secret.wip.desc": "Faster then devs!",
 
   "htu.moreinfo.tooltip": "Hold\u00A7e Shift\u00A77  for more information",
-  "htu.fluidtank.tooltip": "Stores fluids. Retains content when broken."
+  "htu.fluidtank.tooltip": "Stores fluids. Retains content when broken.",
+
+  "htu.infomsg.fluid_level": "Fluid level: ",
+  "htu.infomsg.temperature": "Temperature: ",
+  "htu.infomsg.pressure": "Pressure: ",
+
+  "htu.gui.sensor_temperature.config": "Thermometer Configuration"
 }

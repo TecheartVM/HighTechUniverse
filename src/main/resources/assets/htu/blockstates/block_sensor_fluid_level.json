@@ -1,0 +1,5 @@
+{
+    "variants": {
+        "": { "model": "htu:block/block_sensor_fluid_level" }
+    }
+}

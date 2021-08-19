@@ -30,8 +30,8 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.common.ToolType;
 import net.minecraftforge.fml.network.NetworkHooks;
 import techeart.htu.objects.TileEntityIgnitable;
-import techeart.htu.utils.RegistryHandler;
 import techeart.htu.utils.registration.HTUBlock;
+import techeart.htu.utils.registration.RegistryHandler;
 
 import java.util.Random;
 

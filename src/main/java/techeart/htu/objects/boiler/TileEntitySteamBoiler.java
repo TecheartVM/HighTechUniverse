@@ -1,10 +1,11 @@
 package techeart.htu.objects.boiler;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.inventory.ISidedInventory;
 import net.minecraft.inventory.ItemStackHelper;
 import net.minecraft.inventory.container.Container;
@@ -17,44 +18,26 @@ import net.minecraft.particles.ParticleTypes;
 import net.minecraft.state.properties.BlockStateProperties;
 import net.minecraft.tileentity.ITickableTileEntity;
 import net.minecraft.util.Direction;
+import net.minecraft.util.Hand;
 import net.minecraft.util.NonNullList;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.world.World;
 import net.minecraftforge.common.ForgeHooks;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.util.LazyOptional;
+import net.minecraftforge.fml.network.NetworkHooks;
 import techeart.htu.MainClass;
-import techeart.htu.objects.HTUFluidTank;
 import techeart.htu.objects.TileEntityIgnitable;
 import techeart.htu.utils.FuelTemperatures;
 import techeart.htu.utils.HTUHooks;
-import techeart.htu.utils.RegistryHandler;
+import techeart.htu.utils.registration.RegistryHandler;
+import techeart.htu.utils.temperature.ITemperatureHandler;
 
-import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Random;
 
-public class TileEntitySteamBoiler extends TileEntityIgnitable implements ISidedInventory, INamedContainerProvider, ITickableTileEntity
+public class TileEntitySteamBoiler extends TileEntityIgnitable implements ISidedInventory, INamedContainerProvider, ITickableTileEntity, ITemperatureHandler
 {
-    private Random random = new Random();
-
-    //internal tanks volume constants in mB
-    public static final int internalVolumeWater = 4000;
-    public static final int internalVolumeSteam = 4000;
-
-    //temperature constants
-    public static final int maxTemperature = 120;
-    public static final int minTemperature = -30;
-    public static final int conversionTemperature = 100;
-
-    //pressure constants
-    public static final int maxPressure = 640;
-    public static final int initialPressure = 40;
-    public static final int ejectionPressure = 560;
-
-    public static final int waterConsumptionRate = 1;
-    public static final int conversionFactor = 3;
-
     //tracked fields
     private int burnTime;
     private int burnTimeTotal;
@@ -66,45 +49,73 @@ public class TileEntitySteamBoiler extends TileEntityIgnitable implements ISided
 
     private ITextComponent customName;
 
-    //fluid constant links
-    private static final Fluid WATER = Fluids.WATER;
-    private static final Fluid STEAM = RegistryHandler.FLUID_STEAM.get();
-
-    private final HTUFluidTank tankWater;
-    private final HTUFluidTank tankSteam;
-
     private NonNullList<ItemStack> inventory = NonNullList.withSize(1, ItemStack.EMPTY);
 
     public TileEntitySteamBoiler()
     {
         super(RegistryHandler.STEAM_BOILER.getMainBlock().getMachineTile());
-
-        int steamVolume = internalVolumeSteam + (Math.floorDiv(internalVolumeSteam, ejectionPressure) * (maxPressure - ejectionPressure));
-
-        tankWater = new HTUFluidTank(internalVolumeWater, WATER, HTUFluidTank.Type.INSERT_ONLY);
-        tankSteam = new HTUFluidTank(steamVolume, STEAM, HTUFluidTank.Type.EJECT_ONLY);
-
-        if(world != null && pos != null)
-            ambientTemperature = HTUHooks.getAmbientTemperature(world, pos);
-        temperature = ambientTemperature;
-        pressure = initialPressure;
     }
+
+    //--Potentially good temperature per-tick-incrementer formula--//
+    //    float inc = -Math.exp(0.1f*(curTemp - maxTemp)) + 1;     //
+    //-------------------------------------------------------------//
 
     @Override
     public void tick()
     {
-        if (this.isBurning()) --this.burnTime;
+        if (isBurning()) --burnTime;
 
-        if (!this.world.isRemote)
+        if (!world.isRemote())
         {
+            tickIgnition();
 
+            if(temperature < fuelBurnTemperature) temperature++;
+            else if(!isBurning() && temperature > ambientTemperature) temperature--;
         }
     }
 
+    /*HTUTileEntity*/
+    @Override
+    public void onPlaced(World world, BlockPos pos, BlockState state, LivingEntity placer, ItemStack stack)
+    {
+        super.onPlaced(world, pos, state, placer, stack);
+
+        if(world.isRemote()) return;
+        world.setBlockState(pos.up(), RegistryHandler.STEAM_BOILER.getMachineBlock(1).getBlock().getDefaultState());
+        if(stack.hasDisplayName()) setCustomName(stack.getDisplayName());
+
+        ambientTemperature = HTUHooks.getAmbientTemperature(world, pos);
+        temperature = ambientTemperature;
+    }
+
+    @Override
+    public void onBlockRemoved(BlockState state, World world, BlockPos pos, BlockState newState)
+    {
+        super.onBlockRemoved(state, world, pos, newState);
+
+        if(world.isRemote()) return;
+        //remove boiler top
+        BlockState blockAbove = world.getBlockState(pos.up());
+        if(blockAbove.getBlock() == RegistryHandler.STEAM_BOILER.getMachineBlock(1).getBlock())
+            world.setBlockState(pos.up(), Blocks.AIR.getDefaultState());
+    }
+
+    @Override
+    public void onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockRayTraceResult hit)
+    {
+        super.onBlockActivated(state, world, pos, player, hand, hit);
+
+        if(world.isRemote()) return;
+        ItemStack heldItem = player.getHeldItem(hand);
+        if(!TileEntityIgnitable.interact(this, heldItem))
+            NetworkHooks.openGui((ServerPlayerEntity)player, this, pos);
+    }
+
+    /*TileEntityIgnitable*/
     @Override
     public void ignite()
     {
-        if(world.isRemote) return;
+        if(world.isRemote()) return;
 
         ItemStack fuel = this.inventory.get(0);
         if (!fuel.isEmpty())
@@ -154,18 +165,7 @@ public class TileEntitySteamBoiler extends TileEntityIgnitable implements ISided
         }
     }
 
-    @Override
-    public boolean receiveClientEvent(int id, int type)
-    {
-        if(id == 0)
-        {
-            if (this.world.isRemote)
-                world.addParticle(ParticleTypes.CLOUD, this.pos.getX() + 0.5D, this.pos.getY() + 1, this.pos.getZ() + 0.5D, 0, 0.2D, 0);
-            return true;
-        }
-        return false;
-    }
-
+    /*data*/
     @Override
     public void read(BlockState state, CompoundNBT nbt)
     {
@@ -181,9 +181,6 @@ public class TileEntitySteamBoiler extends TileEntityIgnitable implements ISided
 
         this.inventory = NonNullList.<ItemStack>withSize(this.getSizeInventory(), ItemStack.EMPTY);
         ItemStackHelper.loadAllItems(nbt, this.inventory);
-
-        tankWater.readFromNBT(nbt);
-        tankSteam.readFromNBT(nbt);
     }
 
     @Override
@@ -201,17 +198,27 @@ public class TileEntitySteamBoiler extends TileEntityIgnitable implements ISided
 
         ItemStackHelper.saveAllItems(nbt, this.inventory);
 
-        tankWater.writeToNBT(nbt);
-        tankSteam.writeToNBT(nbt);
-
         return nbt;
     }
 
+    /*network*/
     @Override
     public CompoundNBT getUpdateTag() { return write(new CompoundNBT()); }
 
     @Override
     public void handleUpdateTag(BlockState state, CompoundNBT tag) { read(state, tag); }
+
+    @Override
+    public boolean receiveClientEvent(int id, int type)
+    {
+        if(id == 0)
+        {
+            if (this.world.isRemote)
+                world.addParticle(ParticleTypes.CLOUD, this.pos.getX() + 0.5D, this.pos.getY() + 0.5D, this.pos.getZ() + 0.5D, 0, 0.2D, 0);
+            return true;
+        }
+        return false;
+    }
 
     @Nullable
     @Override
@@ -225,13 +232,11 @@ public class TileEntitySteamBoiler extends TileEntityIgnitable implements ISided
     @Override
     public void onDataPacket(NetworkManager net, SUpdateTileEntityPacket pkt) { read(this.world.getBlockState(pkt.getPos()), pkt.getNbtCompound()); }
 
+    /*misc*/
     private static int getItemBurnTime(ItemStack stack)
     {
         return ForgeHooks.getBurnTime(stack);
     }
-
-    @Override
-    public boolean isItemValidForSlot(int index, ItemStack stack) { return getItemBurnTime(stack) > 0; }
 
     public int getField(int id)
     {
@@ -242,9 +247,9 @@ public class TileEntitySteamBoiler extends TileEntityIgnitable implements ISided
                 break;
             case 1: field = this.burnTimeTotal;
                 break;
-            case 2: field = this.tankWater.getFluidAmount();
+            case 2: //field = this.tankWater.getFluidAmount();
                 break;
-            case 3: field = this.tankSteam.getFluidAmount();
+            case 3: //field = this.tankSteam.getFluidAmount();
                 break;
             case 4: field = this.temperature;
                 break;
@@ -280,36 +285,26 @@ public class TileEntitySteamBoiler extends TileEntityIgnitable implements ISided
         return this.burnTime > 0;
     }
 
+    /*name*/
     public ITextComponent getDefaultName() { return new TranslationTextComponent("container." + MainClass.MODID + ".steam_boiler"); }
 
     public void setCustomName(ITextComponent name) { this.customName = name; }
 
+    /*inventory*/
     @Override
-    public int getSizeInventory()
-    {
-        return this.inventory.size();
-    }
+    public int getSizeInventory() { return this.inventory.size(); }
 
     @Override
-    public boolean isEmpty()
-    {
-        return inventory.get(0).isEmpty();
-    }
+    public boolean isEmpty() { return inventory.get(0).isEmpty(); }
 
     @Override
-    public ItemStack getStackInSlot(int index)
-    {
-        return this.inventory.get(index);
-    }
+    public ItemStack getStackInSlot(int index) { return this.inventory.get(index); }
 
     @Override
     public ItemStack decrStackSize(int index, int count) { return ItemStackHelper.getAndSplit(this.inventory, index, count); }
 
     @Override
-    public ItemStack removeStackFromSlot(int index)
-    {
-        return ItemStackHelper.getAndRemove(this.inventory, index);
-    }
+    public ItemStack removeStackFromSlot(int index) { return ItemStackHelper.getAndRemove(this.inventory, index); }
 
     @Override
     public void setInventorySlotContents(int index, ItemStack stack)
@@ -319,10 +314,7 @@ public class TileEntitySteamBoiler extends TileEntityIgnitable implements ISided
     }
 
     @Override
-    public int getInventoryStackLimit()
-    {
-        return 64;
-    }
+    public int getInventoryStackLimit() { return 64; }
 
     @Override
     public boolean isUsableByPlayer(PlayerEntity player)
@@ -343,41 +335,36 @@ public class TileEntitySteamBoiler extends TileEntityIgnitable implements ISided
     @Override
     public Container createMenu(int windowId, PlayerInventory playerInventory, PlayerEntity player) { return new ContainerSteamBoiler(windowId, playerInventory, this); }
 
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> capability)
-    {
-//        if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY)
-//        {
-//            return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.orEmpty(capability, LazyOptional.of(() -> fluidHandler));
-//        }
-        return super.getCapability(capability);
-    }
-
-    @Nonnull
-    @Override
-    public <T> LazyOptional<T> getCapability(@Nonnull Capability<T> capability, @Nullable Direction facing)
-    {
-//        if (capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY && facing != Direction.DOWN)
-//        {
-//            return CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.orEmpty(capability, LazyOptional.of(() -> fluidHandler));
-//        }
-        return super.getCapability(capability, facing);
-    }
-
     @Override
     public int[] getSlotsForFace(Direction side)
     {
+        if(side == Direction.DOWN) return new int[]{0};
         return new int[0];
     }
 
     @Override
-    public boolean canInsertItem(int index, ItemStack itemStackIn, @Nullable Direction direction) {
-        return false;
+    public boolean isItemValidForSlot(int index, ItemStack stack) { return index == 0 && getItemBurnTime(stack) > 0; }
+
+    @Override
+    public boolean canInsertItem(int index, ItemStack itemStackIn, @Nullable Direction direction)
+    {
+        if(direction.getAxis().isVertical()) return false;
+        return isItemValidForSlot(index, itemStackIn);
     }
 
     @Override
-    public boolean canExtractItem(int index, ItemStack stack, Direction direction) {
-        return false;
-    }
+    public boolean canExtractItem(int index, ItemStack stack, Direction direction) { return false; }
+
+    /*ITemperatureHandler*/
+    @Override
+    public int getTemperature() { return temperature; }
+
+    @Override
+    public void setTemperature(int value) { temperature = value; }
+
+    @Override
+    public int getMaxTemperature() { return 120; }
+
+    @Override
+    public int getMinTemperature() { return -20; }
 }

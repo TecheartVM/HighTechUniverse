@@ -5,7 +5,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.ITileEntityProvider;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.LivingEntity;
@@ -16,7 +15,8 @@ import net.minecraft.item.Items;
 import net.minecraft.loot.LootContext;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.*;
+import net.minecraft.util.ActionResultType;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.BlockRayTraceResult;
 import net.minecraft.util.math.shapes.ISelectionContext;
@@ -32,14 +32,14 @@ import net.minecraftforge.fluids.FluidStack;
 import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
-import net.minecraftforge.fluids.capability.IFluidHandlerItem;
-import techeart.htu.utils.*;
+import techeart.htu.utils.ColorConstants;
+import techeart.htu.utils.FluidUtils;
+import techeart.htu.utils.KeyboardHelper;
+import techeart.htu.utils.ModUtils;
 import techeart.htu.utils.registration.HTUBlock;
+import techeart.htu.utils.registration.RegistryHandler;
 
 import javax.annotation.Nullable;
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -130,29 +130,27 @@ public class BlockFluidTank extends HTUBlock implements ITileEntityProvider
     public ActionResultType onBlockActivated(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand handIn, BlockRayTraceResult hit)
     {
         //TODO add vanilla bottles support..?
-        if(world.isRemote) return  ActionResultType.CONSUME;
-        if(player.isSneaking()) return ActionResultType.PASS;
-        if(world.getTileEntity(pos) instanceof TileEntityFluidTank)
-        {
-            TileEntityFluidTank tankTile = ((TileEntityFluidTank) world.getTileEntity(pos));
+        if(world.isRemote || player.isSneaking()) return  ActionResultType.CONSUME;
+        TileEntityFluidTank tankTile = ((TileEntityFluidTank) world.getTileEntity(pos));
+        if(tankTile == null) return ActionResultType.PASS;
 
-            ItemStack heldItem = player.getHeldItem(handIn);
-            if (heldItem.isEmpty())
-                ModUtils.playerInfoMessage("Fluid in tank: " + tankTile.getFluid().getAmount()+"mB",player);
+        ItemStack heldItem = player.getHeldItem(handIn);
+        if (heldItem.isEmpty())
+            ModUtils.playerInfoMessage("Fluid in tank: " + tankTile.getFluid().getAmount()+"mB",player);
 
-            /*~~~~~ACHIEVEMENT~~~~~*/
-            if(heldItem.getItem() == Items.PUFFERFISH_BUCKET
-                    || heldItem.getItem() == Items.COD_BUCKET
-                    || heldItem.getItem() == Items.SALMON_BUCKET
-                    || heldItem.getItem() == Items.TROPICAL_FISH_BUCKET
-            ) ModUtils.unlockAdvancement(player,"secret/wip");
-            /*~~~~~END ACHIEVEMENT~~~~~*/
+        /*~~~~~ACHIEVEMENT~~~~~*/
+        if(heldItem.getItem() == Items.PUFFERFISH_BUCKET
+                || heldItem.getItem() == Items.COD_BUCKET
+                || heldItem.getItem() == Items.SALMON_BUCKET
+                || heldItem.getItem() == Items.TROPICAL_FISH_BUCKET
+        ) ModUtils.unlockAdvancement(player,"secret/wip");
+        /*~~~~~END ACHIEVEMENT~~~~~*/
 
-            //handling tank interaction
-            LazyOptional<IFluidHandler> lo = tankTile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY);
-            if(lo.isPresent() && FluidUtils.interactWithTank(player, handIn, heldItem, lo.orElse(null), 0).updated())
-                updateLight(world, pos);
-        }
+        //handling tank interaction
+        LazyOptional<IFluidHandler> lo = tankTile.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY);
+        if(lo.isPresent() && FluidUtils.interactWithTank(player, handIn, heldItem, lo.orElse(null), 0).updated())
+            updateLight(world, pos);
+
         return ActionResultType.SUCCESS;
     }
 

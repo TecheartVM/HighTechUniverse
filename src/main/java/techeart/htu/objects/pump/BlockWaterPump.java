@@ -22,8 +22,8 @@ import net.minecraft.world.IWorld;
 import net.minecraft.world.World;
 import net.minecraftforge.common.ToolType;
 import techeart.htu.utils.ModUtils;
-import techeart.htu.utils.RegistryHandler;
 import techeart.htu.utils.registration.HTUBlock;
+import techeart.htu.utils.registration.RegistryHandler;
 
 import javax.annotation.Nullable;
 import java.util.Map;

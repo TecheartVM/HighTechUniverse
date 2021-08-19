@@ -21,7 +21,7 @@ import techeart.htu.objects.TileEntityIgnitable;
 import techeart.htu.recipes.alloying.AlloyRecipe;
 import techeart.htu.recipes.alloying.AlloyRecipes;
 import techeart.htu.utils.InventoryHelper;
-import techeart.htu.utils.RegistryHandler;
+import techeart.htu.utils.registration.RegistryHandler;
 
 import javax.annotation.Nullable;
 

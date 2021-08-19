@@ -1,0 +1,9 @@
+{
+  "variants":
+  {
+    "facing=north":{"model":"htu:block/block_sensor_temperature"},
+    "facing=east" :{"model":"htu:block/block_sensor_temperature","y":90},
+    "facing=south":{"model":"htu:block/block_sensor_temperature","y":180},
+    "facing=west" :{"model":"htu:block/block_sensor_temperature","y":270}
+  }
+}

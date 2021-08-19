@@ -17,7 +17,7 @@ import net.minecraft.tileentity.TileEntityType;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TranslationTextComponent;
-import techeart.htu.utils.RegistryHandler;
+import techeart.htu.utils.registration.RegistryHandler;
 
 import javax.annotation.Nullable;
 import java.util.Random;
